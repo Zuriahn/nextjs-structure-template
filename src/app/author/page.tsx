@@ -1,72 +1,21 @@
-"use client";
 
-import { Box, Container, Typography } from "@mui/material";
-import { useEffect, useState, useTransition } from "react";
+import { Box } from "@mui/material";
 
-import { getAll } from "@/services/author/getAll";
-import { IAuthorDto } from "@/entities/author/author.dto";
+import AuthorContainerHome from "@/components/containers/author.container";
 
-import { useGlobalError } from "@/context/global.error.context";
-import CreateAuthorForm from "@/components/forms/create.author";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-export default function Author() {
-  const { showError } = useGlobalError();
+export default async function Author() {
+  const session = await getServerSession();
 
-  const [data, setData] = useState<IAuthorDto[]>([]);
-
-  const [isPending, startTransition] = useTransition();
-
-  useEffect(() => {
-    startTransition(async () => {
-      try {
-        const response = await getAll();
-        setData(response);
-      } catch (error: any) {
-        showError(error);
-      }
-    });
-  }, []);
+  if(!session){
+    redirect("/");
+  }
 
   return (
-    <Box sx={{ width: "100%", border: 1, borderRadius: 2 }}>
-      {isPending ? undefined : (
-        <>
-          <Typography color={"textPrimary"} sx={{ textAlign: "center" }}>
-            Author Page
-          </Typography>
-          <CreateAuthorForm />
-          {data?.map((item, index) => (
-            <Box key={`${index}-author-description`} sx={{ p: 4 }}>
-              <Typography color={"textSecondary"}>
-                Id: {`${item.id}`}
-              </Typography>
-              <Typography color={"textSecondary"}>
-                Name: {`${item.name}`}
-              </Typography>
-              <Typography color={"textSecondary"}>
-                Phone number: {`${item.phoneNumber}`}
-              </Typography>
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography color={"textSecondary"}>
-                  Address country: {`${item.address.country}`}
-                </Typography>
-                <Typography color={"textSecondary"}>
-                  Address state: {`${item.address.state}`}
-                </Typography>
-                <Typography color={"textSecondary"}>
-                  Address street: {`${item.address.street}`}
-                </Typography>
-                <Typography color={"textSecondary"}>
-                  Address number: {`${item.address.number}`}
-                </Typography>
-                <Typography color={"textSecondary"}>
-                  Address zipcode: {`${item.address.zipcode}`}
-                </Typography>
-              </Box>
-            </Box>
-          ))}
-        </>
-      )}
+    <Box>
+      <AuthorContainerHome />
     </Box>
   );
 }

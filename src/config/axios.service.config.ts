@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { getSession } from "next-auth/react";
 
 class AxiosService {
   protected axiosInstance: AxiosInstance;
@@ -15,6 +16,11 @@ class AxiosService {
     this.initializeInterceptors();
   }
 
+  private async getToken() {
+    const session = await getSession();
+    return session?.accessToken;
+  }
+
   public handleError(error: any) {
     if (axios.isAxiosError(error)) {
       throw new Error("Error axios desde server");
@@ -25,9 +31,9 @@ class AxiosService {
 
   private initializeInterceptors() {
     this.axiosInstance.interceptors.request.use(
-      (config) => {
+      async (config) => {
         // Example: Attach token if available
-        const token = localStorage.getItem("token");
+        const token = await this.getToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }

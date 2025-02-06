@@ -6,10 +6,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ICreateAuthorDto } from "@/entities/author/create.author.dto";
 import { useTransition } from "react";
 import { createAuthor } from "@/services/author/create";
-import { useGlobalError } from "@/context/global.error.context";
+import { useGlobalContext } from "@/context/global.context";
 
 export default function CreateAuthorForm() {
-  const { showError } = useGlobalError();
+  const { showError } = useGlobalContext();
 
   const {
     register,
@@ -132,7 +132,6 @@ export default function CreateAuthorForm() {
             defaultValue={undefined}
             type={"number"}
             funReturnValue={(value) => {
-              console.log(value);
               setValue("number", value);
             }}
           />
